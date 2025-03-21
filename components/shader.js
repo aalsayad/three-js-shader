@@ -5,9 +5,11 @@ export const vertex = `
   uniform float uRadius;
   
   varying vec2 vUv;
+  varying float vBulgeStrength;
   
   void main() {
     vUv = uv;
+    vBulgeStrength = 0.0;
     
     // Create a copy of the position that we can modify
     vec3 pos = position;
@@ -19,18 +21,13 @@ export const vertex = `
     if (dist < uRadius) {
       float bulgeAmount = 1.0 - (dist / uRadius);
       // Apply smooth falloff
-      bulgeAmount = smoothstep(0.0, 1.0, bulgeAmount);
-      
-      // Edge protection - reduce bulge near edges of the plane
-      // Calculate distance from edge (0 at edge, 1 at center)
-      vec2 edgeDist = min(uv, 1.0 - uv) * 2.0; // Range 0-1
-      float edgeFactor = min(edgeDist.x, edgeDist.y);
-      
-      // Apply edge factor - reduces bulge near edges
-      bulgeAmount *= smoothstep(0.0, 0.3, edgeFactor);
+      bulgeAmount = smoothstep(0.0, 1.0, bulgeAmount); 
       
       // Push the vertex outward along its normal
       pos += normal * bulgeAmount * uStrength;
+      
+      // Pass bulge strength to fragment shader
+      vBulgeStrength = bulgeAmount;
     }
     
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -41,9 +38,10 @@ export const fragment = `
   uniform sampler2D uTexture;
   
   varying vec2 vUv;
+  varying float vBulgeStrength;
   
   void main() {
-    // Simply use the UV coordinates directly
+    // Simple texture mapping with no blur
     vec4 texColor = texture2D(uTexture, vUv);
     gl_FragColor = texColor;
   }
