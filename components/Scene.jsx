@@ -12,6 +12,7 @@ function ShaderPlane() {
   const lerpedMouse = useRef(new THREE.Vector2(0.5, 0.5));
   const { size } = useThree();
   const shaderRef = useRef();
+  const [time, setTime] = useState(0);
 
   // Track actual mouse position
   useEffect(() => {
@@ -29,7 +30,7 @@ function ShaderPlane() {
   useFrame(() => {
     if (shaderRef.current) {
       // Apply lerp to mouse position
-      // Increased from 0.05 to 0.25 for faster response
+      // Keep the faster 0.25 factor for better responsiveness
       lerpedMouse.current.x +=
         (actualMouse.current.x - lerpedMouse.current.x) * 0.25;
       lerpedMouse.current.y +=
@@ -84,7 +85,7 @@ function ShaderPlane() {
 
   return (
     <mesh>
-      <planeGeometry args={[planeWidth, planeHeight, 10, 10]} />{" "}
+      <planeGeometry args={[planeWidth, planeHeight, 50, 50]} />{" "}
       {/* Reduced subdivisions for better performance */}
       <shaderMaterial
         ref={shaderRef}
@@ -94,7 +95,8 @@ function ShaderPlane() {
           uTexture: { value: texture },
           uMouse: { value: lerpedMouse.current },
           uStrength: { value: 0.25 }, // Controls bulge strength
-          uRadius: { value: 0.35 }, // Controls bulge radius
+          uRadius: { value: 0.3 }, // Controls bulge radius
+          uBlurIntensity: { value: 5.0 }, // Blur intensity - adjust as needed
         }}
         transparent={true}
       />
@@ -105,7 +107,7 @@ function ShaderPlane() {
 export default function Scene() {
   return (
     <Canvas camera={{ position: [0, 0, 1.5], fov: 50 }}>
-      <color attach="background" args={["#f0f0f0"]} />
+      {/* <color attach="background" args={["#f0f0f0"]} /> */}
       <ShaderPlane />
     </Canvas>
   );
