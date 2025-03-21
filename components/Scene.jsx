@@ -32,9 +32,9 @@ function ShaderPlane() {
       // Apply lerp to mouse position
       // Keep the faster 0.25 factor for better responsiveness
       lerpedMouse.current.x +=
-        (actualMouse.current.x - lerpedMouse.current.x) * 0.25;
+        (actualMouse.current.x - lerpedMouse.current.x) * 0.04;
       lerpedMouse.current.y +=
-        (actualMouse.current.y - lerpedMouse.current.y) * 0.25;
+        (actualMouse.current.y - lerpedMouse.current.y) * 0.04;
 
       // Update the shader with the lerped position
       shaderRef.current.uniforms.uMouse.value = lerpedMouse.current;
@@ -96,7 +96,6 @@ function ShaderPlane() {
           uMouse: { value: lerpedMouse.current },
           uStrength: { value: 0.25 }, // Controls bulge strength
           uRadius: { value: 0.3 }, // Controls bulge radius
-          uBlurIntensity: { value: 5.0 }, // Blur intensity - adjust as needed
         }}
         transparent={true}
       />
